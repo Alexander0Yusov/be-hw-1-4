@@ -10,11 +10,19 @@ import {
   postBlogHandler,
   putBlogHandler,
 } from './handlers';
+import { paginationAndSortingValidation } from '../../core/middlewares/validation/query-pagination-sorting.validation-middleware';
+import { BlogSortField } from './input/blog-sort-field';
 
 export const blogsRouter = Router({});
 
 blogsRouter
-  .get('', getBlogListHandler)
+  .get(
+    '',
+    paginationAndSortingValidation(BlogSortField),
+    errorsCatchMiddleware,
+    getBlogListHandler,
+  )
+
   .post(
     '',
     superAdminGuardMiddleware,
@@ -22,7 +30,9 @@ blogsRouter
     errorsCatchMiddleware,
     postBlogHandler,
   )
+
   .get('/:id', idValidationMiddleware, errorsCatchMiddleware, getBlogHandler)
+
   .put(
     '/:id',
     superAdminGuardMiddleware,
@@ -31,6 +41,7 @@ blogsRouter
     errorsCatchMiddleware,
     putBlogHandler,
   )
+
   .delete(
     '/:id',
     superAdminGuardMiddleware,
