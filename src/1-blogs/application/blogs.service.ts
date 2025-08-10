@@ -2,10 +2,7 @@ import { WithId } from 'mongodb';
 import { Blog } from '../types/blog';
 import { blogsRepository } from '../repository/blogs.repository';
 import { BlogQueryInput } from '../router/input/blog-query.input';
-
-export enum DriverErrorCode {
-  HasActiveRide = 'DRIVER_HAS_ACTIVE_RIDE',
-}
+import { BlogInputDto } from '../dto/blog-input.dto';
 
 export const blogsService = {
   async findMany(
@@ -14,45 +11,33 @@ export const blogsService = {
     return blogsRepository.findMany(queryDto);
   },
 
+  async create(dto: BlogInputDto): Promise<WithId<Blog>> {
+    const newBlog: Blog = {
+      name: dto.name,
+      description: dto.description,
+      websiteUrl: dto.websiteUrl,
+      createdAt: new Date(),
+      isMembership: false,
+    };
+
+    return blogsRepository.create(newBlog);
+  },
+
   async findByIdOrFail(id: string): Promise<WithId<Blog>> {
     return blogsRepository.findByIdOrFail(id);
   },
 
-  //   async create(dto: DriverAttributes): Promise<string> {
-  //     const newDriver: Driver = {
-  //       name: dto.name,
-  //       phoneNumber: dto.phoneNumber,
-  //       email: dto.email,
-  //       vehicle: {
-  //         make: dto.vehicleMake,
-  //         model: dto.vehicleModel,
-  //         year: dto.vehicleYear,
-  //         licensePlate: dto.vehicleLicensePlate,
-  //         description: dto.vehicleDescription,
-  //         features: dto.vehicleFeatures,
-  //       },
-  //       createdAt: new Date(),
-  //     };
+  async findById(id: string): Promise<WithId<Blog> | null> {
+    return blogsRepository.findById(id);
+  },
 
-  //     return driversRepository.create(newDriver);
-  //   },
+  async update(id: string, dto: BlogInputDto): Promise<void> {
+    await blogsRepository.update(id, dto);
+    return;
+  },
 
-  //   async update(id: string, dto: DriverAttributes): Promise<void> {
-  //     await driversRepository.update(id, dto);
-  //     return;
-  //   },
-
-  //   async delete(id: string): Promise<void> {
-  //     const activeRide = await ridesRepository.findActiveRideByDriverId(id);
-
-  //     if (activeRide) {
-  //       throw new DomainError(
-  //         `Driver has an active ride. Complete or cancel the ride first`,
-  //         DriverErrorCode.HasActiveRide,
-  //       );
-  //     }
-
-  //     await driversRepository.delete(id);
-  //     return;
-  //   },
+  async delete(id: string): Promise<void> {
+    await blogsRepository.delete(id);
+    return;
+  },
 };

@@ -1,0 +1,29 @@
+import { WithId } from 'mongodb';
+import { Blog } from '../../types/blog';
+import { blogsService } from '../../application/blogs.service';
+import { Request, Response } from 'express';
+import { postsService } from '../../../2-posts/application/posts.service';
+import { mapToPostViewModel } from '../../../2-posts/mappers/map-to-blog-view-model.util';
+import { HttpStatus } from '../../../core/types/HttpStatus';
+
+export async function postPostByBlogIdHandler(req: Request, res: Response) {
+  try {
+    // берем айди из params
+    // подтверждаем существование блога
+    const blog: WithId<Blog> = await blogsService.findByIdOrFail(req.params.id);
+
+    // делаем отправку данных в сервис
+    const createdPost = await postsService.create(
+      req.body,
+      blog._id,
+      blog.name,
+    );
+
+    // мапим и возвращаем
+    const postsOutput = mapToPostViewModel(createdPost);
+
+    res.status(HttpStatus.Created).send(postsOutput);
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
+  }
+}

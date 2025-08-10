@@ -4,6 +4,7 @@ import { postsRepository } from '../../repository/posts.repository';
 import { PostInputDto } from '../../dto/post-input.dto';
 import { Post } from '../../types/post';
 import { mapToPostViewModel } from '../../mappers/map-to-blog-view-model.util';
+import { ObjectId } from 'mongodb';
 
 export async function postPostHandler(
   req: Request<{}, {}, PostInputDto>,
@@ -13,7 +14,7 @@ export async function postPostHandler(
     title: req.body.title,
     shortDescription: req.body.shortDescription,
     content: req.body.content,
-    blogId: req.body.blogId,
+    blogId: new ObjectId(req.body.blogId),
     blogName: '', // бурить в коллекцию блога
     createdAt: new Date(),
   };

@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
-
-import { blogsRepository } from '../../repository/blogs.repository';
 import { createErrorMessages } from '../../../core/utils/error.utils';
 import { HttpStatus } from '../../../core/types/HttpStatus';
 import { mapToBlogViewModel } from '../../mappers/map-to-blog-view-model.util';
+import { blogsService } from '../../application/blogs.service';
 
 export async function getBlogHandler(req: Request, res: Response) {
   try {
-    const blog = await blogsRepository.findById(req.params.id);
+    const blog = await blogsService.findById(req.params.id);
 
     if (!blog) {
       res
