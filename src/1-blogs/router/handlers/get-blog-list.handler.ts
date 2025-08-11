@@ -20,7 +20,7 @@ export async function getBlogListHandler(req: Request, res: Response) {
       totalCount,
     });
 
-    res.send(blogsOutput);
+    res.status(HttpStatus.Ok).send(blogsOutput);
   } catch (e: unknown) {
     res.sendStatus(HttpStatus.InternalServerError);
   }
