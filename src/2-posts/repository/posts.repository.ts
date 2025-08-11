@@ -48,7 +48,7 @@ export const postsRepository = {
     //   filter.name = { $regex: searchNameTerm, $options: 'i' };
     // }
 
-    filter.blogId = { $regex: id };
+    filter.blogId = new ObjectId(id);
 
     const items = await postCollection
       .find(filter)

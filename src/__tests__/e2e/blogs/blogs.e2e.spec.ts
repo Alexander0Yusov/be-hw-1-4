@@ -123,7 +123,7 @@ describe('Blog API', () => {
       .send(createFakeBlog())
       .expect(HttpStatus.Created);
 
-    const createdPost = await request(app)
+    await request(app)
       .post(BLOGS_PATH + '/' + `${createdBlog.body.id}` + '/posts')
       .set('Authorization', generateBasicAuthToken())
       .send({
@@ -132,5 +132,39 @@ describe('Blog API', () => {
         content: 'fake content',
       })
       .expect(HttpStatus.Created);
+  });
+
+  it('should get posts; GET /blogs/:blogId/posts', async () => {
+    const createdBlog = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
+    await request(app)
+      .post(BLOGS_PATH + '/' + `${createdBlog.body.id}` + '/posts')
+      .set('Authorization', generateBasicAuthToken())
+      .send({
+        title: 'fake title',
+        shortDescription: 'fake description',
+        content: 'fake content',
+      })
+      .expect(HttpStatus.Created);
+    await request(app)
+      .post(BLOGS_PATH + '/' + `${createdBlog.body.id}` + '/posts')
+      .set('Authorization', generateBasicAuthToken())
+      .send({
+        title: 'fake title 2',
+        shortDescription: 'fake description 2',
+        content: 'fake content 2',
+      })
+      .expect(HttpStatus.Created);
+
+    const postListResponse = await request(app)
+      .get(BLOGS_PATH + '/' + `${createdBlog.body.id}` + '/posts')
+      .expect(HttpStatus.Ok);
+
+    expect(postListResponse.body.items).toBeInstanceOf(Array);
+    expect(postListResponse.body.items.length).toBeGreaterThanOrEqual(2);
   });
 });

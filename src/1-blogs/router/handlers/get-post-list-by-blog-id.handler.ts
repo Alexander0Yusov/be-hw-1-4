@@ -40,7 +40,7 @@ export async function getPostListByBlogIdHandler(req: Request, res: Response) {
       totalCount,
     });
 
-    res.send(postsOutput);
+    res.status(HttpStatus.Ok).send(postsOutput);
   } catch (e: unknown) {
     res.sendStatus(HttpStatus.InternalServerError);
   }

@@ -24,7 +24,7 @@ describe('Blog API body validation check', () => {
     await stopDB();
   });
 
-  it(`❌ should not create blog when incorrect body passed; POST /api/blogs'`, async () => {
+  it(`❌ should not create blog when incorrect body passed; POST /api/blogs`, async () => {
     await request(app)
       .post(BLOGS_PATH)
       .send(createFakeBlog())
@@ -84,7 +84,7 @@ describe('Blog API body validation check', () => {
 
   // добавка
 
-  it(`❌ should not create post when incorrect /:blogId passed; POST /api/blogs/:blogId/posts'`, async () => {
+  it(`❌ should not create post when incorrect /:blogId passed; POST /api/blogs/:blogId/posts`, async () => {
     const invalidDataSet1 = await request(app)
       .post(BLOGS_PATH + '/63189b06003380064c4193be' + '/posts')
       .set('Authorization', generateBasicAuthToken())
@@ -103,5 +103,11 @@ describe('Blog API body validation check', () => {
       .set('Authorization', generateBasicAuthToken());
 
     expect(blogListResponse.body.items).toHaveLength(0);
+  });
+
+  it(`❌ should not get response when incorrect /:blogId passed; GET /api/blogs/:blogId/posts`, async () => {
+    await request(app)
+      .get(BLOGS_PATH + '/63189b06003380064c4193be' + '/posts')
+      .expect(HttpStatus.NotFound);
   });
 });
