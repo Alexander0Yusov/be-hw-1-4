@@ -10,11 +10,19 @@ import {
   postPostHandler,
   putPostHandler,
 } from './handlers';
+import { paginationAndSortingValidation } from '../../core/middlewares/validation/query-pagination-sorting.validation-middleware';
+import { PostSortField } from './input/post-sort-field';
 
 export const postsRouter = Router({});
 
 postsRouter
-  .get('', getPostListHandler)
+  .get(
+    '',
+    paginationAndSortingValidation(PostSortField),
+    errorsCatchMiddleware,
+    getPostListHandler,
+  )
+
   .post(
     '',
     superAdminGuardMiddleware,
@@ -22,7 +30,9 @@ postsRouter
     errorsCatchMiddleware,
     postPostHandler,
   )
+
   .get('/:id', idValidationMiddleware, errorsCatchMiddleware, getPostHandler)
+
   .put(
     '/:id',
     superAdminGuardMiddleware,
@@ -31,6 +41,7 @@ postsRouter
     errorsCatchMiddleware,
     putPostHandler,
   )
+
   .delete(
     '/:id',
     superAdminGuardMiddleware,

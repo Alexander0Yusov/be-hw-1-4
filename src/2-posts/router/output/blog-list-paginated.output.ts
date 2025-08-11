@@ -1,4 +1,3 @@
-import { WithId } from 'mongodb';
 import { Post } from '../../types/post';
 
 export type PostListPaginatedOutput = {
@@ -6,5 +5,8 @@ export type PostListPaginatedOutput = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: WithId<Post>[];
+  items: (Omit<Post, 'blogId'> & {
+    id: string;
+    blogId: string;
+  })[];
 };

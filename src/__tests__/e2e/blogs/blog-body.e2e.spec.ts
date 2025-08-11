@@ -79,6 +79,6 @@ describe('Blog API body validation check', () => {
       .get(BLOGS_PATH)
       .set('Authorization', generateBasicAuthToken());
 
-    expect(blogListResponse.body).toHaveLength(0);
+    expect(blogListResponse.body.items).toHaveLength(0);
   });
 });

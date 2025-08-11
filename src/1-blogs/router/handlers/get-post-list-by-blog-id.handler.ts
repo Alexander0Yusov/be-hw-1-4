@@ -6,7 +6,7 @@ import { postsService } from '../../../2-posts/application/posts.service';
 import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set-default-sort-and-pagination';
 import { matchedData } from 'express-validator';
 import { HttpStatus } from '../../../core/types/HttpStatus';
-import { mapToPostListPaginatedOutput } from '../../../2-posts/mappers/map-to-bloglist-paginated-output.util';
+import { mapToPostListPaginatedOutput } from '../../../2-posts/mappers/map-to-postlist-paginated-output.util';
 
 export async function getPostListByBlogIdHandler(req: Request, res: Response) {
   try {
@@ -22,7 +22,7 @@ export async function getPostListByBlogIdHandler(req: Request, res: Response) {
     const queryData = matchedData(req, { locations: ['query'] });
     const queryInput = setDefaultSortAndPaginationIfNotExist(queryData);
 
-    const { items, totalCount } = await postsService.findMany(
+    const { items, totalCount } = await postsService.findManyById(
       req.params.id,
       queryInput as any,
     );

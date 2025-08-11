@@ -1,6 +1,7 @@
 import { WithId } from 'mongodb';
 import { Post } from '../types/post';
 import { PostListPaginatedOutput } from '../router/output/blog-list-paginated.output';
+import { mapToPostViewModel } from './map-to-post-view-model.util';
 
 export function mapToPostListPaginatedOutput(
   posts: WithId<Post>[],
@@ -12,6 +13,6 @@ export function mapToPostListPaginatedOutput(
     pageSize: meta.pageSize,
     totalCount: meta.totalCount,
 
-    items: posts,
+    items: posts.map(mapToPostViewModel),
   };
 }

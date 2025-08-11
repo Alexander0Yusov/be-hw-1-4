@@ -7,14 +7,25 @@ const testPostData: PostInputDto = {
   blogId: 'fakeid',
 };
 
-export const createFakePost = (post?: PostInputDto) => {
-  let newPost = testPostData;
-
-  if (post) {
-    newPost = {
-      ...post,
+export const createFakePost = (
+  data?:
+    | string
+    | {
+        title: string;
+        shortDescription: string;
+        content: string;
+        blogId: string;
+      },
+) => {
+  if (typeof data === 'string') {
+    return {
+      ...testPostData,
+      blogId: data,
     };
   }
 
-  return newPost;
+  return {
+    ...testPostData,
+    ...data,
+  };
 };

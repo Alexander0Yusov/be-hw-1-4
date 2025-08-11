@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { HttpStatus } from '../../../core/types/HttpStatus';
-import { postsRepository } from '../../repository/posts.repository';
 import { createErrorMessages } from '../../../core/utils/error.utils';
+import { postsService } from '../../application/posts.service';
 
 export async function deletePostHandler(req: Request, res: Response) {
   try {
-    const post = await postsRepository.findById(req.params.id);
+    const post = await postsService.findById(req.params.id);
 
     if (!post) {
       res
@@ -16,7 +16,7 @@ export async function deletePostHandler(req: Request, res: Response) {
       return;
     }
 
-    await postsRepository.delete(req.params.id);
+    await postsService.delete(req.params.id);
 
     res.sendStatus(HttpStatus.NoContent);
   } catch (error: unknown) {

@@ -2,12 +2,18 @@ import request from 'supertest';
 import express from 'express';
 import { setupApp } from '../../../setup-app';
 import { HttpStatus } from '../../../core/types/HttpStatus';
-import { POSTS_PATH, TESTING_PATH } from '../../../core/paths/paths';
+import {
+  BLOGS_PATH,
+  POSTS_PATH,
+  TESTING_PATH,
+} from '../../../core/paths/paths';
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 import { createFakePost } from '../../utils/posts/create-fake-post';
 import { PostInputDto } from '../../../2-posts/dto/post-input.dto';
 import { runDB } from '../../../db/mongo.db';
 import { SETTINGS } from '../../../core/settings/settings';
+import { createFakeBlog } from '../../utils/blogs/create-fake-blog';
+import { ObjectId } from 'mongodb';
 
 describe('Post API', () => {
   const app = express();
@@ -22,38 +28,56 @@ describe('Post API', () => {
   });
 
   it('should create post; POST posts', async () => {
+    const createdBlog = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
     await request(app)
       .post(POSTS_PATH)
       .set('Authorization', generateBasicAuthToken())
-      .send(createFakePost())
+      .send(createFakePost(createdBlog.body.id))
       .expect(HttpStatus.Created);
   });
 
   it('should return posts list; GET /posts', async () => {
+    const createdBlog = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
     await request(app)
       .post(POSTS_PATH)
       .set('Authorization', generateBasicAuthToken())
-      .send(createFakePost())
+      .send(createFakePost(createdBlog.body.id))
       .expect(HttpStatus.Created);
     await request(app)
       .post(POSTS_PATH)
       .set('Authorization', generateBasicAuthToken())
-      .send(createFakePost())
+      .send(createFakePost(createdBlog.body.id))
       .expect(HttpStatus.Created);
 
     const postListResponse = await request(app)
       .get(POSTS_PATH)
       .expect(HttpStatus.Ok);
 
-    expect(postListResponse.body).toBeInstanceOf(Array);
-    expect(postListResponse.body.length).toBeGreaterThanOrEqual(2);
+    expect(postListResponse.body.items).toBeInstanceOf(Array);
+    expect(postListResponse.body.items.length).toBeGreaterThanOrEqual(2);
   });
 
   it('should return post by id; GET /posts/:id', async () => {
+    const createdBlog = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
     const createResponse = await request(app)
       .post(POSTS_PATH)
       .set('Authorization', generateBasicAuthToken())
-      .send(createFakePost())
+      .send(createFakePost(createdBlog.body.id))
       .expect(HttpStatus.Created);
 
     const getResponse = await request(app)
@@ -64,40 +88,65 @@ describe('Post API', () => {
   });
 
   it('should update post; PUT /posts/:id', async () => {
-    const createResponse = await request(app)
+    const createdBlog_1 = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
+    const createdBlog_2 = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
+    const createdPost = await request(app)
       .post(POSTS_PATH)
       .set('Authorization', generateBasicAuthToken())
-      .send(createFakePost())
+      .send(createFakePost(createdBlog_1.body.id))
       .expect(HttpStatus.Created);
 
     const postUpdateData: PostInputDto = {
-      title: 'some text',
-      shortDescription: 'some description',
-      content: 'some content',
-      blogId: 'newid',
+      title: 'text. after put req',
+      shortDescription: 'description. after put req',
+      content: 'content. after put req',
+      blogId: createdBlog_2.body.id,
     };
 
     await request(app)
-      .put(POSTS_PATH + '/' + `${createResponse.body.id}`)
+      .put(POSTS_PATH + '/' + `${createdPost.body.id}`)
       .set('Authorization', generateBasicAuthToken())
       .send(postUpdateData)
       .expect(HttpStatus.NoContent);
 
     const response = await request(app).get(
-      POSTS_PATH + '/' + `${createResponse.body.id}`,
+      POSTS_PATH + '/' + `${createdPost.body.id}`,
+    );
+
+    console.log(
+      222,
+      createdBlog_1.body.id,
+      createdBlog_2.body.id,
+      response.body,
     );
 
     expect(response.body).toEqual({
-      ...createResponse.body,
+      ...createdPost.body,
       ...postUpdateData,
     });
   });
 
   it('DELETE /posts/:id and check after NOT FOUND', async () => {
+    const createdBlog = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
     const createResponse = await request(app)
       .post(POSTS_PATH)
       .set('Authorization', generateBasicAuthToken())
-      .send(createFakePost())
+      .send(createFakePost(createdBlog.body.id))
       .expect(HttpStatus.Created);
 
     await request(app)

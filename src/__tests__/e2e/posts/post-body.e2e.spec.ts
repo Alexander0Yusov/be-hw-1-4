@@ -2,11 +2,16 @@ import request from 'supertest';
 import express from 'express';
 import { setupApp } from '../../../setup-app';
 import { HttpStatus } from '../../../core/types/HttpStatus';
-import { POSTS_PATH, TESTING_PATH } from '../../../core/paths/paths';
+import {
+  BLOGS_PATH,
+  POSTS_PATH,
+  TESTING_PATH,
+} from '../../../core/paths/paths';
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 import { createFakePost } from '../../utils/posts/create-fake-post';
 import { runDB, stopDB } from '../../../db/mongo.db';
 import { SETTINGS } from '../../../core/settings/settings';
+import { createFakeBlog } from '../../utils/blogs/create-fake-blog';
 
 describe('Post API body validation check', () => {
   const app = express();
@@ -14,7 +19,6 @@ describe('Post API body validation check', () => {
 
   beforeAll(async () => {
     await runDB(SETTINGS.MONGO_URL);
-
     await request(app)
       .delete(TESTING_PATH + '/all-data')
       .expect(HttpStatus.NoContent);
@@ -25,9 +29,15 @@ describe('Post API body validation check', () => {
   });
 
   it(`❌ should not create post when incorrect body passed; POST /api/posts'`, async () => {
+    const createdBlog = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
     await request(app)
       .post(POSTS_PATH)
-      .send(createFakePost())
+      .send(createFakePost(createdBlog.body.id))
       .expect(HttpStatus.Unauthorized);
 
     const invalidDataSet1 = await request(app)
@@ -81,7 +91,6 @@ describe('Post API body validation check', () => {
 
     // check что никто не создался
     const postListResponse = await request(app).get(POSTS_PATH);
-
-    expect(postListResponse.body).toHaveLength(0);
+    expect(postListResponse.body.items).toHaveLength(0);
   });
 });
