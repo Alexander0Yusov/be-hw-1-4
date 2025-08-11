@@ -5,21 +5,27 @@ import { Request, Response } from 'express';
 import { postsService } from '../../../2-posts/application/posts.service';
 import { mapToPostViewModel } from '../../../2-posts/mappers/map-to-post-view-model.util';
 import { HttpStatus } from '../../../core/types/HttpStatus';
+import { createErrorMessages } from '../../../core/utils/error.utils';
 
 export async function postPostByBlogIdHandler(req: Request, res: Response) {
   try {
-    // берем айди из params
-    // подтверждаем существование блога
     const blog: WithId<Blog> = await blogsService.findByIdOrFail(req.params.id);
 
-    // делаем отправку данных в сервис
+    if (!blog) {
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Blog not found' }]),
+        );
+      return;
+    }
+
     const createdPost = await postsService.create(
       req.body,
       blog._id.toString(),
       blog.name,
     );
 
-    // мапим и возвращаем
     const postsOutput = mapToPostViewModel(createdPost);
 
     res.status(HttpStatus.Created).send(postsOutput);
