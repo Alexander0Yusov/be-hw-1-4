@@ -7,15 +7,19 @@ import { setDefaultSortAndPaginationIfNotExist } from '../../../core/helpers/set
 import { matchedData } from 'express-validator';
 import { HttpStatus } from '../../../core/types/HttpStatus';
 import { mapToPostListPaginatedOutput } from '../../../2-posts/mappers/map-to-postlist-paginated-output.util';
+import { createErrorMessages } from '../../../core/utils/error.utils';
 
 export async function getPostListByBlogIdHandler(req: Request, res: Response) {
   try {
-    // берем айди из сервиса
-    // подтверждаем существование блога
     const blog: WithId<Blog> = await blogsService.findByIdOrFail(req.params.id);
 
     if (!blog) {
-      // Error ...
+      res
+        .status(HttpStatus.NotFound)
+        .send(
+          createErrorMessages([{ field: 'id', message: 'Blog not found' }]),
+        );
+      return;
     }
 
     // делаем запрос за постами в которых блогАйди данный
