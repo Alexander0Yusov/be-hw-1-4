@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 
-export const dtoValidationMiddleware = [
+export const blogDtoValidationMiddleware = [
   body('name')
     .isString()
     .withMessage('Ожидается строка')

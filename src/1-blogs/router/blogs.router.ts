@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { idValidationMiddleware } from '../../core/middlewares/validation/id-validation.middleware';
 import { errorsCatchMiddleware } from '../../core/middlewares/validation/errors-catch.middleware';
 import { superAdminGuardMiddleware } from '../../core/middlewares/validation/super-admin-guard.middleware';
-import { dtoValidationMiddleware } from '../validation/dto-validation.middleware';
+import { blogDtoValidationMiddleware } from '../validation/blog-dto-validation.middleware';
 import {
   deleteBlogHandler,
   getBlogHandler,
@@ -16,6 +16,7 @@ import { query } from 'express-validator';
 import { PostSortField } from '../../2-posts/router/input/post-sort-field';
 import { getPostListByBlogIdHandler } from './handlers/get-post-list-by-blog-id.handler';
 import { postPostByBlogIdHandler } from './handlers/post-post-by-blog-id.handler';
+import { postDtoByBlogIdValidationMiddleware } from '../validation/post-dto-by-blog-id-validation.middleware';
 
 export const blogsRouter = Router({});
 
@@ -31,7 +32,7 @@ blogsRouter
   .post(
     '',
     superAdminGuardMiddleware,
-    dtoValidationMiddleware,
+    blogDtoValidationMiddleware,
     errorsCatchMiddleware,
     postBlogHandler,
   )
@@ -50,7 +51,7 @@ blogsRouter
     '/:id/posts',
     superAdminGuardMiddleware,
     idValidationMiddleware,
-    dtoValidationMiddleware,
+    postDtoByBlogIdValidationMiddleware,
     errorsCatchMiddleware,
     postPostByBlogIdHandler, // new
   )
@@ -61,7 +62,7 @@ blogsRouter
     '/:id',
     superAdminGuardMiddleware,
     idValidationMiddleware,
-    dtoValidationMiddleware,
+    blogDtoValidationMiddleware,
     errorsCatchMiddleware,
     putBlogHandler,
   )

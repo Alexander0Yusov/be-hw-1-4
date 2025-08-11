@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { idValidationMiddleware } from '../../core/middlewares/validation/id-validation.middleware';
 import { errorsCatchMiddleware } from '../../core/middlewares/validation/errors-catch.middleware';
 import { superAdminGuardMiddleware } from '../../core/middlewares/validation/super-admin-guard.middleware';
-import { dtoValidationMiddleware } from '../validation/dto-validation.middleware';
+import { postDtoValidationMiddleware } from '../validation/post-dto-validation.middleware';
 import {
   deletePostHandler,
   getPostHandler,
@@ -26,7 +26,7 @@ postsRouter
   .post(
     '',
     superAdminGuardMiddleware,
-    dtoValidationMiddleware,
+    postDtoValidationMiddleware,
     errorsCatchMiddleware,
     postPostHandler,
   )
@@ -37,7 +37,7 @@ postsRouter
     '/:id',
     superAdminGuardMiddleware,
     idValidationMiddleware,
-    dtoValidationMiddleware,
+    postDtoValidationMiddleware,
     errorsCatchMiddleware,
     putPostHandler,
   )
