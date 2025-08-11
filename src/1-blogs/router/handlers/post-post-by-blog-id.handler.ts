@@ -9,7 +9,9 @@ import { createErrorMessages } from '../../../core/utils/error.utils';
 
 export async function postPostByBlogIdHandler(req: Request, res: Response) {
   try {
-    const blog: WithId<Blog> = await blogsService.findByIdOrFail(req.params.id);
+    const blog: WithId<Blog> | null = await blogsService.findById(
+      req.params.id,
+    );
 
     if (!blog) {
       res

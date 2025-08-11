@@ -3,10 +3,14 @@ import { createErrorMessages } from '../../../core/utils/error.utils';
 import { HttpStatus } from '../../../core/types/HttpStatus';
 import { mapToBlogViewModel } from '../../mappers/map-to-blog-view-model.util';
 import { blogsService } from '../../application/blogs.service';
+import { WithId } from 'mongodb';
+import { Blog } from '../../types/blog';
 
 export async function getBlogHandler(req: Request, res: Response) {
   try {
-    const blog = await blogsService.findById(req.params.id);
+    const blog: WithId<Blog> | null = await blogsService.findById(
+      req.params.id,
+    );
 
     if (!blog) {
       res
