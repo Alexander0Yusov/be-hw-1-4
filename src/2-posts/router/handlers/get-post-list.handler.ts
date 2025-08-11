@@ -20,8 +20,7 @@ export async function getPostListHandler(req: Request, res: Response) {
       totalCount,
     });
 
-    res.status(200);
-    res.send(postsOutput);
+    res.status(200).send(postsOutput);
   } catch (error: unknown) {
     res.sendStatus(HttpStatus.InternalServerError);
   }
