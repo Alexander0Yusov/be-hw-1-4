@@ -13,7 +13,6 @@ import { PostInputDto } from '../../../2-posts/dto/post-input.dto';
 import { runDB } from '../../../db/mongo.db';
 import { SETTINGS } from '../../../core/settings/settings';
 import { createFakeBlog } from '../../utils/blogs/create-fake-blog';
-import { ObjectId } from 'mongodb';
 
 describe('Post API', () => {
   const app = express();
