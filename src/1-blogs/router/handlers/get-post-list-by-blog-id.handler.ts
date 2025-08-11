@@ -11,7 +11,9 @@ import { createErrorMessages } from '../../../core/utils/error.utils';
 
 export async function getPostListByBlogIdHandler(req: Request, res: Response) {
   try {
-    const blog: WithId<Blog> = await blogsService.findByIdOrFail(req.params.id);
+    const blog: WithId<Blog> | null = await blogsService.findById(
+      req.params.id,
+    );
 
     if (!blog) {
       res
@@ -22,10 +24,10 @@ export async function getPostListByBlogIdHandler(req: Request, res: Response) {
       return;
     }
 
-    // делаем запрос за постами в которых блогАйди данный
     const queryData = matchedData(req, { locations: ['query'] });
     const queryInput = setDefaultSortAndPaginationIfNotExist(queryData);
 
+    // делаем запрос за постами в которых блогАйди данный
     const { items, totalCount } = await postsService.findManyById(
       req.params.id,
       queryInput as any,
