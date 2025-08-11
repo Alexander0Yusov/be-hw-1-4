@@ -81,4 +81,27 @@ describe('Blog API body validation check', () => {
 
     expect(blogListResponse.body.items).toHaveLength(0);
   });
+
+  // добавка
+
+  it(`❌ should not create post when incorrect /:blogId passed; POST /api/blogs/:blogId/posts'`, async () => {
+    const invalidDataSet1 = await request(app)
+      .post(BLOGS_PATH + '/63189b06003380064c4193be' + '/posts')
+      .set('Authorization', generateBasicAuthToken())
+      .send({
+        title: 'fake title',
+        shortDescription: 'fake description',
+        content: 'fake content',
+      })
+      .expect(HttpStatus.NotFound);
+
+    expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
+
+    // check что никто не создался
+    const blogListResponse = await request(app)
+      .get(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken());
+
+    expect(blogListResponse.body.items).toHaveLength(0);
+  });
 });

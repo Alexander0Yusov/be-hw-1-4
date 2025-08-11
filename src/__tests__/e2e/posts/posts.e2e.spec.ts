@@ -123,13 +123,6 @@ describe('Post API', () => {
       POSTS_PATH + '/' + `${createdPost.body.id}`,
     );
 
-    console.log(
-      222,
-      createdBlog_1.body.id,
-      createdBlog_2.body.id,
-      response.body,
-    );
-
     expect(response.body).toEqual({
       ...createdPost.body,
       ...postUpdateData,

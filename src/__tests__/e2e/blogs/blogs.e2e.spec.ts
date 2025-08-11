@@ -3,7 +3,11 @@ import express from 'express';
 import { setupApp } from '../../../setup-app';
 import { createFakeBlog } from '../../utils/blogs/create-fake-blog';
 import { HttpStatus } from '../../../core/types/HttpStatus';
-import { BLOGS_PATH, TESTING_PATH } from '../../../core/paths/paths';
+import {
+  BLOGS_PATH,
+  POSTS_PATH,
+  TESTING_PATH,
+} from '../../../core/paths/paths';
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 import { BlogInputDto } from '../../../1-blogs/dto/blog-input.dto';
 import { runDB } from '../../../db/mongo.db';
@@ -109,5 +113,24 @@ describe('Blog API', () => {
     );
 
     expect(blogResponse.status).toBe(HttpStatus.NotFound);
+  });
+
+  // addition
+  it('should create post; POST /blogs/:blogId/posts', async () => {
+    const createdBlog = await request(app)
+      .post(BLOGS_PATH)
+      .set('Authorization', generateBasicAuthToken())
+      .send(createFakeBlog())
+      .expect(HttpStatus.Created);
+
+    const createdPost = await request(app)
+      .post(BLOGS_PATH + '/' + `${createdBlog.body.id}` + '/posts')
+      .set('Authorization', generateBasicAuthToken())
+      .send({
+        title: 'fake title',
+        shortDescription: 'fake description',
+        content: 'fake content',
+      })
+      .expect(HttpStatus.Created);
   });
 });
