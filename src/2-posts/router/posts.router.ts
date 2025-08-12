@@ -19,7 +19,7 @@ postsRouter
   .get(
     '',
     paginationAndSortingValidation(PostSortField),
-    errorsCatchMiddleware,
+    // errorsCatchMiddleware,
     getPostListHandler,
   )
 

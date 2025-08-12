@@ -37,7 +37,6 @@ blogsRouter
     postBlogHandler,
   )
 
-  //new route
   .get(
     '/:id/posts',
     idValidationMiddleware,
@@ -46,14 +45,13 @@ blogsRouter
     getPostListByBlogIdHandler,
   )
 
-  //new route
   .post(
     '/:id/posts',
     superAdminGuardMiddleware,
     idValidationMiddleware,
     postDtoByBlogIdValidationMiddleware,
     errorsCatchMiddleware,
-    postPostByBlogIdHandler, // new
+    postPostByBlogIdHandler,
   )
 
   .get('/:id', idValidationMiddleware, errorsCatchMiddleware, getBlogHandler)

@@ -6,10 +6,11 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "nodemon --inspect dist/index.js",
-    "jest": "jest -i",
+    "jest": "jest -i --detectOpenHandles",
     "lint": "eslint --fix .",
     "format": "prettier --write .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "localhost:run": "ssh -R 80:localhost:5001 nokey@localhost.run"
   },
   "keywords": [],
   "author": "",

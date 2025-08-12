@@ -10,7 +10,7 @@ import {
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 import { createFakePost } from '../../utils/posts/create-fake-post';
 import { PostInputDto } from '../../../2-posts/dto/post-input.dto';
-import { runDB } from '../../../db/mongo.db';
+import { runDB, stopDB } from '../../../db/mongo.db';
 import { SETTINGS } from '../../../core/settings/settings';
 import { createFakeBlog } from '../../utils/blogs/create-fake-blog';
 
@@ -25,7 +25,9 @@ describe('Post API', () => {
       .delete(TESTING_PATH + '/all-data')
       .expect(HttpStatus.NoContent);
   });
-
+  afterAll(async () => {
+    await stopDB();
+  });
   it('should create post; POST posts', async () => {
     const createdBlog = await request(app)
       .post(BLOGS_PATH)

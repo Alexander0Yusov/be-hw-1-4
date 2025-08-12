@@ -10,7 +10,7 @@ import {
 } from '../../../core/paths/paths';
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 import { BlogInputDto } from '../../../1-blogs/dto/blog-input.dto';
-import { runDB } from '../../../db/mongo.db';
+import { runDB, stopDB } from '../../../db/mongo.db';
 import { SETTINGS } from '../../../core/settings/settings';
 
 describe('Blog API', () => {
@@ -23,6 +23,10 @@ describe('Blog API', () => {
     await request(app)
       .delete(TESTING_PATH + '/all-data')
       .expect(HttpStatus.NoContent);
+  });
+
+  afterAll(async () => {
+    await stopDB();
   });
 
   it('should create blog; POST blogs', async () => {
